@@ -1,9 +1,6 @@
-import com.google.inject.AbstractModule;
-import com.google.inject.Guice;
-import com.google.inject.Inject;
-import com.google.inject.Injector;
-
-import java.util.logging.Logger;
+import com.google.inject.*;
+import com.google.inject.name.Named;
+import com.google.inject.name.Names;
 
 
 public class GuiceTester {
@@ -20,18 +17,44 @@ public class GuiceTester {
 }
 
 class TextEditor {
-    private Logger logger;
+    private final SpellChecker spellChecker;
 
     @Inject
-    public TextEditor(Logger logger) {
-        this.logger = logger;
+    public TextEditor(SpellChecker spellChecker) {
+        this.spellChecker = spellChecker;
     }
 
     public void makeSpellCheck(){
-        logger.info("In TextEditor.makeSpellCheck() method");
+        spellChecker.checkSpelling();
     }
 }
 
 class TextEditorModule extends AbstractModule {
 
+    @Override
+    protected void configure() {
+        bind(SpellChecker.class).to(SpellCheckerImpl.class);
+
+        bind(String.class)
+                .annotatedWith(Names.named("JDBC"))
+                .toInstance("jdbc:mysql://localhost:5326/emp");
+    }
+
 }
+
+interface SpellChecker {
+    void checkSpelling();
+}
+
+class SpellCheckerImpl implements SpellChecker {
+
+    @Inject
+    @Named("JDBC")
+    private String dbUrl;
+
+    public void checkSpelling() {
+        System.out.println("Inside checkSpelling.");
+        System.out.println(dbUrl);
+    }
+}
+
