@@ -1,7 +1,4 @@
 import com.google.inject.*;
-import com.google.inject.name.Names;
-
-import javax.inject.Named;
 
 
 public class GuiceTester {
@@ -11,29 +8,56 @@ public class GuiceTester {
         Injector injector = Guice.createInjector(new TextEditorModule());
         TextEditor editor = injector.getInstance(TextEditor.class);
 
-        editor.makeConnection();
+        editor.makeSpellCheck();
     }
 
     static class TextEditor {
-        private String dbUrl;
+        private final SpellChecker spellChecker;
 
         @Inject
-        public TextEditor(@Named("JDBC") String dbUrl) {
-            this.dbUrl = dbUrl;
+        public TextEditor(SpellChecker spellChecker) {
+            this.spellChecker = spellChecker;
         }
 
-        public void makeConnection(){
-            System.out.println(dbUrl);
+        public void makeSpellCheck(){
+            spellChecker.checkSpelling();
         }
     }
 
     static class TextEditorModule extends AbstractModule {
 
-        @Override
-        protected void configure() {
-            bind(String.class)
-                    .annotatedWith(Names.named("JDBC"))
-                    .toInstance("jdbc:mysql://localhost:5326/emp");
+        @Provides
+        public SpellChecker provideSpellChecker(){
+
+            String dbUrl = "jdbc:mysql://localhost:5326/emp";
+            String user = "user";
+            int timeout = 100;
+
+            return new SpellCheckerImpl(dbUrl, user, timeout);
+        }
+    }
+
+    interface SpellChecker {
+        void checkSpelling();
+    }
+
+    static class SpellCheckerImpl implements SpellChecker {
+
+        private final String dbUrl;
+        private final String user;
+        private final Integer timeout;
+
+        public SpellCheckerImpl(String dbUrl, String user, Integer timeout) {
+            this.dbUrl = dbUrl;
+            this.user = user;
+            this.timeout = timeout;
+        }
+
+        public void checkSpelling() {
+            System.out.println("Inside checkSpelling.");
+            System.out.println(dbUrl);
+            System.out.println(user);
+            System.out.println(timeout);
         }
     }
 
