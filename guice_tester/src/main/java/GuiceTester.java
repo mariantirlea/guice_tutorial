@@ -34,10 +34,6 @@ class TextEditorModule extends AbstractModule {
     @Override
     protected void configure() {
 
-        bind(String.class)
-                .annotatedWith(Names.named("JDBC"))
-                .toInstance("jdbc:mysql://localhost:5326/emp");
-
     }
 
 }
@@ -49,9 +45,12 @@ interface SpellChecker {
 
 class SpellCheckerImpl implements SpellChecker {
 
-    @Inject
-    @Named("JDBC")
-    private String dbUrl;
+    private String dbUrl = "jdbc:mysql://localhost:5326/emp";
+
+    @Inject(optional = true)
+    public void setDbUrl(@Named("JDBC") String dbUrl){
+        this.dbUrl = dbUrl;
+    }
 
     public void checkSpelling() {
         System.out.println("Inside checkSpelling.");
