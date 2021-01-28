@@ -1,4 +1,6 @@
 import com.google.inject.*;
+import com.google.inject.name.Named;
+import com.google.inject.name.Names;
 
 
 public class GuiceTester {
@@ -32,7 +34,10 @@ class TextEditorModule extends AbstractModule {
     @Override
     protected void configure() {
 
-        bind(SpellChecker.class).to(SpellCheckerImpl.class);
+        bind(String.class)
+                .annotatedWith(Names.named("JDBC"))
+                .toInstance("jdbc:mysql://localhost:5326/emp");
+
     }
 
 }
@@ -44,8 +49,16 @@ interface SpellChecker {
 
 class SpellCheckerImpl implements SpellChecker {
 
+    private String dbUrl;
+
+    @Inject
+    public void setDbUrl(@Named("JDBC") String dbUrl){
+        this.dbUrl = dbUrl;
+    }
+
     public void checkSpelling() {
         System.out.println("Inside checkSpelling.");
+        System.out.println(dbUrl);
     }
 }
 
