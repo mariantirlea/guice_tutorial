@@ -11,19 +11,19 @@ public class GuiceTester {
         Injector injector = Guice.createInjector(new TextEditorModule());
         TextEditor editor = injector.getInstance(TextEditor.class);
 
-        editor.makeSpellCheck();
+        editor.makeConnection();
     }
 
     static class TextEditor {
-        private SpellChecker spellChecker;
+        private String dbUrl;
 
         @Inject
-        public TextEditor(@Named("OpenOffice") SpellChecker spellChecker) {
-            this.spellChecker = spellChecker;
+        public TextEditor(@Named("JDBC") String dbUrl) {
+            this.dbUrl = dbUrl;
         }
 
-        public void makeSpellCheck(){
-            spellChecker.checkSpelling();
+        public void makeConnection(){
+            System.out.println(dbUrl);
         }
     }
 
@@ -31,30 +31,10 @@ public class GuiceTester {
 
         @Override
         protected void configure() {
-            bind(SpellChecker.class)
-                    .annotatedWith(Names.named("OpenOffice"))
-                    .to(OpenOfficeWordSpellCheckerImpl.class);
+            bind(String.class)
+                    .annotatedWith(Names.named("JDBC"))
+                    .toInstance("jdbc:mysql://localhost:5326/emp");
         }
     }
-
-    interface SpellChecker {
-        void checkSpelling();
-    }
-
-    static class SpellCheckerImpl implements SpellChecker{
-
-        public void checkSpelling() {
-            System.out.println("Inside checkSpelling.");
-        }
-    }
-
-    static class OpenOfficeWordSpellCheckerImpl extends SpellCheckerImpl {
-
-        @Override
-        public void checkSpelling() {
-            System.out.println("Inside OpenOfficeWordSpellCheckerImpl.checkSpelling.");
-        }
-    }
-
 
 }
