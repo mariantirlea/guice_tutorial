@@ -1,15 +1,8 @@
 import com.google.inject.*;
+import com.google.inject.name.Names;
 
-import java.lang.annotation.Retention;
-import java.lang.annotation.Target;
+import javax.inject.Named;
 
-import static java.lang.annotation.ElementType.*;
-import static java.lang.annotation.RetentionPolicy.RUNTIME;
-
-@BindingAnnotation
-@Target({FIELD, PARAMETER, METHOD})
-@Retention(RUNTIME)
-@interface WinWord {}
 
 public class GuiceTester {
 
@@ -25,7 +18,7 @@ public class GuiceTester {
         private SpellChecker spellChecker;
 
         @Inject
-        public TextEditor(@WinWord SpellChecker spellChecker) {
+        public TextEditor(@Named("OpenOffice") SpellChecker spellChecker) {
             this.spellChecker = spellChecker;
         }
 
@@ -39,8 +32,8 @@ public class GuiceTester {
         @Override
         protected void configure() {
             bind(SpellChecker.class)
-                    .annotatedWith(WinWord.class)
-                    .to(WinWordSpellCheckerImpl.class);
+                    .annotatedWith(Names.named("OpenOffice"))
+                    .to(OpenOfficeWordSpellCheckerImpl.class);
         }
     }
 
@@ -55,11 +48,11 @@ public class GuiceTester {
         }
     }
 
-    static class WinWordSpellCheckerImpl extends SpellCheckerImpl {
+    static class OpenOfficeWordSpellCheckerImpl extends SpellCheckerImpl {
 
         @Override
         public void checkSpelling() {
-            System.out.println("Inside WinWordSpellCheckerImpl.checkSpelling.");
+            System.out.println("Inside OpenOfficeWordSpellCheckerImpl.checkSpelling.");
         }
     }
 
