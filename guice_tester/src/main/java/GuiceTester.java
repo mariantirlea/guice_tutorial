@@ -1,7 +1,15 @@
-import com.google.inject.AbstractModule;
-import com.google.inject.Guice;
-import com.google.inject.Inject;
-import com.google.inject.Injector;
+import com.google.inject.*;
+
+import java.lang.annotation.Retention;
+import java.lang.annotation.Target;
+
+import static java.lang.annotation.ElementType.*;
+import static java.lang.annotation.RetentionPolicy.RUNTIME;
+
+@BindingAnnotation
+@Target({FIELD, PARAMETER, METHOD})
+@Retention(RUNTIME)
+@interface WinWord {}
 
 public class GuiceTester {
 
@@ -17,12 +25,22 @@ public class GuiceTester {
         private SpellChecker spellChecker;
 
         @Inject
-        public TextEditor(SpellChecker spellChecker) {
+        public TextEditor(@WinWord SpellChecker spellChecker) {
             this.spellChecker = spellChecker;
         }
 
         public void makeSpellCheck(){
             spellChecker.checkSpelling();
+        }
+    }
+
+    static class TextEditorModule extends AbstractModule {
+
+        @Override
+        protected void configure() {
+            bind(SpellChecker.class)
+                    .annotatedWith(WinWord.class)
+                    .to(WinWordSpellCheckerImpl.class);
         }
     }
 
@@ -45,13 +63,5 @@ public class GuiceTester {
         }
     }
 
-    static class TextEditorModule extends AbstractModule {
-
-        @Override
-        protected void configure() {
-            bind(SpellChecker.class).to(SpellCheckerImpl.class);
-            bind(SpellCheckerImpl.class).to(WinWordSpellCheckerImpl.class);
-        }
-    }
 
 }
