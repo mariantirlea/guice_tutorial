@@ -7,19 +7,13 @@ public class GuiceTester {
 
     public static void main(String[] args) {
 
-        /**
-         * Guice.createInjector() takes Modules, and returns a new Injector
-         * instance. This method is to be called once during application startup.
-         */
         Injector injector = Guice.createInjector(new TextEditorModule());
+        TextEditor editor = injector.getInstance(TextEditor.class);
 
-        /**
-         * Build object using injector
-         */
-        TextEditor textEditor = injector.getInstance(TextEditor.class);
+        editor.makeSpellCheck();
     }
 
-    public static class TextEditor {
+    static class TextEditor {
         private SpellChecker spellChecker;
 
         @Inject
@@ -27,27 +21,27 @@ public class GuiceTester {
             this.spellChecker = spellChecker;
         }
 
+        public void makeSpellCheck(){
+            spellChecker.checkSpelling();
+        }
     }
 
-    public interface SpellChecker {
-
+    interface SpellChecker {
+        void checkSpelling();
     }
 
-    public static class WinWordSpellChecker implements SpellChecker{
+    static class WinWordSpellChecker implements SpellChecker{
 
+        public void checkSpelling() {
+            System.out.println("Inside checkSpelling.");
+        }
     }
 
-    public static class TextEditorModule extends AbstractModule {
+    static class TextEditorModule extends AbstractModule {
 
         @Override
         protected void configure() {
-
-            /**
-             * Bind SpellChecker binding to WinWordSpellChecker implementation
-             * whenever spellChecker dependency is used
-             */
             bind(SpellChecker.class).to(WinWordSpellChecker.class);
-
         }
     }
 
