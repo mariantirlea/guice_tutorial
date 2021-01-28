@@ -30,10 +30,18 @@ public class GuiceTester {
         void checkSpelling();
     }
 
-    static class WinWordSpellChecker implements SpellChecker{
+    static class SpellCheckerImpl implements SpellChecker{
 
         public void checkSpelling() {
             System.out.println("Inside checkSpelling.");
+        }
+    }
+
+    static class WinWordSpellCheckerImpl extends SpellCheckerImpl {
+
+        @Override
+        public void checkSpelling() {
+            System.out.println("Inside WinWordSpellCheckerImpl.checkSpelling.");
         }
     }
 
@@ -41,7 +49,8 @@ public class GuiceTester {
 
         @Override
         protected void configure() {
-            bind(SpellChecker.class).to(WinWordSpellChecker.class);
+            bind(SpellChecker.class).to(SpellCheckerImpl.class);
+            bind(SpellCheckerImpl.class).to(WinWordSpellCheckerImpl.class);
         }
     }
 
