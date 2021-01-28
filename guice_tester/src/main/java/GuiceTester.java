@@ -33,7 +33,6 @@ class TextEditorModule extends AbstractModule {
 
     @Override
     protected void configure() {
-        bind(SpellChecker.class).to(SpellCheckerImpl.class);
 
         bind(String.class)
                 .annotatedWith(Names.named("JDBC"))
@@ -42,6 +41,7 @@ class TextEditorModule extends AbstractModule {
 
 }
 
+@ImplementedBy(SpellCheckerImpl.class)
 interface SpellChecker {
     void checkSpelling();
 }
