@@ -11,11 +11,14 @@ public class MyDIApplicationJUnitTest {
         //mock the injector with anonymous class
         injector = new MessageServiceInjector() {
             public Consumer getConsumer() {
-                return new MyDIApplication(new MessageService() {
+                MyDIApplication app = new MyDIApplication();
+                app.setService(new MessageService() {
                     public void sendMessage(String msg, String rec) {
                         System.out.println("Mock Message Service implementation");
                     }
                 });
+
+                return app;
             }
         };
     }

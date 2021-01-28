@@ -2,7 +2,7 @@ public class MyDIApplication implements Consumer {
 
     private MessageService service;
 
-    public MyDIApplication(MessageService service){
+    public void setService(MessageService service){
         this.service = service;
     }
 

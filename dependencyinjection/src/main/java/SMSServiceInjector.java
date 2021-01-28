@@ -1,6 +1,10 @@
 public class SMSServiceInjector implements MessageServiceInjector {
 
     public Consumer getConsumer() {
-        return new MyDIApplication(new SMSServiceImpl());
+
+        MyDIApplication app = new MyDIApplication();
+        app.setService(new SMSServiceImpl());
+
+        return app;
     }
 }
