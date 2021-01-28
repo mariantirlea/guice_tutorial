@@ -49,12 +49,9 @@ interface SpellChecker {
 
 class SpellCheckerImpl implements SpellChecker {
 
-    private String dbUrl;
-
     @Inject
-    public void setDbUrl(@Named("JDBC") String dbUrl){
-        this.dbUrl = dbUrl;
-    }
+    @Named("JDBC")
+    private String dbUrl;
 
     public void checkSpelling() {
         System.out.println("Inside checkSpelling.");
