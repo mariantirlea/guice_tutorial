@@ -1,6 +1,4 @@
 import com.google.inject.*;
-import com.google.inject.name.Named;
-import com.google.inject.name.Names;
 
 
 public class GuiceTester {
@@ -8,6 +6,11 @@ public class GuiceTester {
     public static void main(String[] args) {
 
         Injector injector = Guice.createInjector(new TextEditorModule());
+
+        //TODO learn more about injectMembers as it creates another instance and not using the one provided by me
+        SpellChecker spellChecker = new SpellCheckerImpl();
+        System.out.println(spellChecker.hashCode());
+        injector.injectMembers(spellChecker);
 
         TextEditor editor = injector.getInstance(TextEditor.class);
         editor.makeSpellCheck();
@@ -45,16 +48,13 @@ interface SpellChecker {
 
 class SpellCheckerImpl implements SpellChecker {
 
-    private String dbUrl = "jdbc:mysql://localhost:5326/emp";
-
-    @Inject(optional = true)
-    public void setDbUrl(@Named("JDBC") String dbUrl){
-        this.dbUrl = dbUrl;
+    public SpellCheckerImpl(){
+        System.out.println("Default constructor");
     }
 
     public void checkSpelling() {
         System.out.println("Inside checkSpelling.");
-        System.out.println(dbUrl);
+        System.out.println(this.hashCode());
     }
 }
 
