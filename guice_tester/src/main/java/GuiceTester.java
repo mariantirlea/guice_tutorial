@@ -11,54 +11,61 @@ public class GuiceTester {
         editor.makeSpellCheck();
     }
 
-    static class TextEditor {
-        private final SpellChecker spellChecker;
+}
 
-        @Inject
-        public TextEditor(SpellChecker spellChecker) {
-            this.spellChecker = spellChecker;
-        }
+class TextEditor {
+    private final SpellChecker spellChecker;
 
-        public void makeSpellCheck(){
-            spellChecker.checkSpelling();
-        }
+    @Inject
+    public TextEditor(SpellChecker spellChecker) {
+        this.spellChecker = spellChecker;
     }
 
-    static class TextEditorModule extends AbstractModule {
+    public void makeSpellCheck(){
+        spellChecker.checkSpelling();
+    }
+}
 
-        @Provides
-        public SpellChecker provideSpellChecker(){
+class TextEditorModule extends AbstractModule {
 
-            String dbUrl = "jdbc:mysql://localhost:5326/emp";
-            String user = "user";
-            int timeout = 100;
-
-            return new SpellCheckerImpl(dbUrl, user, timeout);
-        }
+    @Override
+    protected void configure() {
+        bind(SpellChecker.class).toProvider(SpellCheckerProvider.class);
     }
 
-    interface SpellChecker {
-        void checkSpelling();
+}
+
+interface SpellChecker {
+    void checkSpelling();
+}
+
+class SpellCheckerImpl implements SpellChecker {
+
+    private final String dbUrl;
+    private final String user;
+    private final Integer timeout;
+
+    public SpellCheckerImpl(String dbUrl, String user, Integer timeout) {
+        this.dbUrl = dbUrl;
+        this.user = user;
+        this.timeout = timeout;
     }
 
-    static class SpellCheckerImpl implements SpellChecker {
-
-        private final String dbUrl;
-        private final String user;
-        private final Integer timeout;
-
-        public SpellCheckerImpl(String dbUrl, String user, Integer timeout) {
-            this.dbUrl = dbUrl;
-            this.user = user;
-            this.timeout = timeout;
-        }
-
-        public void checkSpelling() {
-            System.out.println("Inside checkSpelling.");
-            System.out.println(dbUrl);
-            System.out.println(user);
-            System.out.println(timeout);
-        }
+    public void checkSpelling() {
+        System.out.println("Inside checkSpelling.");
+        System.out.println(dbUrl);
+        System.out.println(user);
+        System.out.println(timeout);
     }
+}
 
+class SpellCheckerProvider implements Provider<SpellChecker>{
+
+    public SpellChecker get() {
+        String dbUrl = "jdbc:mysql://localhost:5326/emp";
+        String user = "user";
+        int timeout = 100;
+
+        return new SpellCheckerImpl(dbUrl, user, timeout);
+    }
 }
